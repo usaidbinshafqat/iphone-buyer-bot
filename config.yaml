@@ -1,0 +1,85 @@
+# Apple Store auto-buyer configuration
+product:
+  # Parts verified on apple.com 2026-10-27. Order = preference (first is preferred).
+  variants:
+    - part_number: "MK1H4LL/A"
+      color: "nightsky"
+      expected_title: "iPhone Duo 512GB Night Sky"
+      product_url: "https://www.apple.com/shop/buy-iphone/iphone-duo/7.6-inch-display-512gb-night-sky-unlocked"
+      configurator_clicks: ["dimensionColornightsky", "dimensionCapacity512gb", "choose-noTradeIn", "purchaseGroupOptionfullprice", "carrierModelUNLOCKED/US", "noapplecare"]
+      max_units: 2
+    - part_number: "MK1G4LL/A"
+      color: "starwhite"
+      expected_title: "iPhone Duo 512GB Star White"
+      product_url: "https://www.apple.com/shop/buy-iphone/iphone-duo/7.6-inch-display-512gb-star-white-unlocked"
+      configurator_clicks: ["dimensionColorstarwhite", "dimensionCapacity512gb", "choose-noTradeIn", "purchaseGroupOptionfullprice", "carrierModelUNLOCKED/US", "noapplecare"]
+      max_units: 1
+    - part_number: "MK1F4LL/A"       # verified via pickup-message 2026-10-28: "iPhone Duo 256GB Night Sky"
+      color: "nightsky"
+      expected_title: "iPhone Duo 256GB Night Sky"
+      product_url: "https://www.apple.com/shop/buy-iphone/iphone-duo/7.6-inch-display-256gb-night-sky-unlocked"
+      configurator_clicks: ["dimensionColornightsky", "dimensionCapacity256gb", "choose-noTradeIn", "purchaseGroupOptionfullprice", "carrierModelUNLOCKED/US", "noapplecare"]
+      max_units: 1
+  want_total: 1                     # stop after this many devices are confirmed
+  units_per_order: 1                # buy one per order, then immediately go again for the next
+  unit_price_usd: 2199.00
+  max_unit_price_usd: 2450.00       # per device cap (covers tax if Apple applies it at review)
+  max_order_total_usd: 4900.00      # per order cap
+
+pickup:
+  window: "3"                       # check-in window on the earliest day: earliest | latest | N (Nth window; the first is the contested one)
+  zip: "97223"                      # Tigard; search radius covers all three Oregon stores
+  stores:                           # only these may be selected at checkout; order = preference on ties
+    R077: "Pioneer Place"            # Portland
+    R090: "Washington Square"        # Tigard
+    R134: "Bridgeport Village"       # Tigard
+  store_parts: {}                   # optional per-store allow-list, e.g. {R106: ["MK1H4LL/A"]}
+
+polling:
+  interval_seconds: 120            # cold keep-warm search cadence; Apple budgets checkoutx per IP (~70 calls -> 541)
+  jitter_seconds: 20
+  hot_seconds: 0                   # after any watcher trigger: search back-to-back this long
+  session_rebuild_minutes: 17      # re-enter checkout before Apple's 20-min session TTL
+  block_cooldown_seconds: 120      # on 541/404: wait this long (doubles per repeat up to block_cooldown_max_seconds), then re-enter
+  block_cooldown_max_seconds: 600
+  failure_retry_seconds: 5          # after 3 consecutive poll failures
+  failure_pause_seconds: 10         # after 6+ consecutive failures (store outage: keep hammering the bag gently)
+  backoff_max_seconds: 1800
+  mode: browser                        # http | browser (checkout-page store search)
+  fallback_to_browser: true
+  proxy_poller:
+    proxy: keychain                   # "keychain" = residential gateway with proxy_user/proxy_pass from Keychain; or a socks5:// URL
+    gateway: core-residential.evomi.com:1000   # Evomi Core Residential, HTTP port; new IP per request
+    user_suffix: ""            # Evomi puts geo on the password (proxy_pass ends in _country-US); DataImpulse used "__cr.us" here
+    rotating: true                    # fresh connection per poll; a 541 just means that exit IP was hot
+    interval_seconds: 2
+    jitter_seconds: 1
+
+checkout:
+  dry_run: true                     # true = stop at Place Order and screenshot; false = actually buy
+  fastpath: true                    # drive checkoutx via XHR from the parked page (select/window/contact/billing), UI only for Review + Place Order
+  sign_in: false                    # Apple ID sign-in at checkout; false until the fresh Chrome profile is trusted via 2FA
+  chrome_profile_dir: "~/apple-buyer/state/chrome-profile"
+  timeout_seconds: 25
+
+notify:
+  telegram_enabled: true           # set true after storing token/chat_id in Keychain
+  keychain_service: "apple-buyer"   # Keychain generic-password service name
+
+state:
+  lock_file: "~/apple-buyer/state/purchase.lock.json"   # ledger of orders placed / in flight
+  last_status_file: "~/apple-buyer/state/last_status.json"
+
+contact:                            # used only if Apple shows empty pickup-contact fields
+  first_name: "First"
+  last_name: "Last"
+  email: "you@example.com"
+  phone: "5555550100"
+
+billing:                            # billing address of the card (guest checkout path)
+  first_name: "First"
+  last_name: "Last"
+  street: "123 Example St"
+  street2: "Apt 1"
+  zip: "00000"
+  city_state: "Seattle, WA"        # what Apple's zip lookup returns for the zip; lets the fast path skip that call

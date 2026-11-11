@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0"><dict>
+  <key>Label</key><string>com.usaid.apple-buyer.b</string>
+  <key>ProgramArguments</key><array>
+    <string>/Users/usaid/apple-buyer/.venv/bin/python</string><string>-m</string><string>buyer.main</string>
+  </array>
+  <key>EnvironmentVariables</key><dict>
+    <key>BUYER_PARTS</key><string>MK1F4LL/A</string>
+    <key>BUYER_PROFILE_DIR</key><string>/Users/usaid/apple-buyer/state/chrome-profile-b</string>
+    <key>BUYER_LOG_NAME</key><string>buyer-b</string>
+    <key>BUYER_INTERVAL</key><string>180</string>
+  </dict>
+  <key>WorkingDirectory</key><string>/Users/usaid/apple-buyer</string>
+  <key>RunAtLoad</key><true/>
+  <key>KeepAlive</key><dict><key>SuccessfulExit</key><false/></dict>
+  <key>ThrottleInterval</key><integer>60</integer>
+  <key>StandardOutPath</key><string>/Users/usaid/apple-buyer/logs/launchd-b.out</string>
+  <key>StandardErrorPath</key><string>/Users/usaid/apple-buyer/logs/launchd-b.err</string>
+  <key>LimitLoadToSessionType</key><string>Aqua</string>
+</dict></plist>

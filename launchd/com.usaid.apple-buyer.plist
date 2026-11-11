@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0"><dict>
+  <key>Label</key><string>com.usaid.apple-buyer</string>
+  <key>ProgramArguments</key><array>
+    <string>/Users/usaid/apple-buyer/.venv/bin/python</string><string>-m</string><string>buyer.main</string>
+  </array>
+  <key>EnvironmentVariables</key><dict>
+    <key>BUYER_PARTS</key><string>MK1H4LL/A,MK1G4LL/A</string>
+  </dict>
+  <key>WorkingDirectory</key><string>/Users/usaid/apple-buyer</string>
+  <key>RunAtLoad</key><true/>
+  <key>KeepAlive</key><dict><key>SuccessfulExit</key><false/></dict>
+  <key>ThrottleInterval</key><integer>60</integer>
+  <key>StandardOutPath</key><string>/Users/usaid/apple-buyer/logs/launchd.out</string>
+  <key>StandardErrorPath</key><string>/Users/usaid/apple-buyer/logs/launchd.err</string>
+  <key>LimitLoadToSessionType</key><string>Aqua</string>
+</dict></plist>
